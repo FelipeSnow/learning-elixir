@@ -1,0 +1,50 @@
+* Pattern Matching
+  It allow us to match simple values, data structures, and functions.
+** Match Operator
+   In elixir ' = ' is a match operator
+   (and not a assignment operator, unlike c-inspired langs)
+   It turns a expression into an equation, this makes elixir
+   match the values on left hand with the values on the right hand
+   if it suceeds, the value of the equation is returned,
+   Otherwise, it throws an error
+*** examples: 
+    - on simple values
+     @code elixir
+     x = 1 # 1
+     2 = x # (MatchError)
+     @end
+
+    - on lists: 
+     @code elixir
+     list = [1, 2, 3] # [1, 2, 3]
+     [1, 2, 3] = list # [1, 2, 3]
+     [] = list # Error
+
+     [1 | tail] = list # [1, 2, 3]
+     tail # [2, 3]
+
+     [2 | _] = list # Error
+     @end
+
+    - on tuples: 
+    @code elixir
+      {:ok, value} = {:ok, "Sucessful!"}
+      value # Sucessful!
+      {:ok, value} = {:error} # MatchError
+    @end
+** Pin Operator
+   - the match operator perfoms assignment 
+   when the left side of the match has a variable
+   sometimes, we don't want to change the value of the var
+   in these cases, the pin operator (^) has his use.
+
+   - when pin a var, we are doing the match
+   on the existing value, without rebinding a new one
+   @code elixir
+     x = 1 # 1
+     ^x = 2 # MatchError
+     {x, ^x} = {2, 1} #{2, 1}
+     x # 2
+   @end
+
+

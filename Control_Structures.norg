@@ -1,0 +1,116 @@
+* Control strucutures in elixir
+** (if) and (unless)
+   the if/2 function on elixir works similarly with the other langs if's
+  @code elixir
+  if String.valid?("Hello") do
+    "Valid string"
+  else
+    "Invalid string"
+  end # "Valid string"
+
+  if "a string value" do 
+    "Truthy"
+  end # "Truthy"
+  @end
+
+   unless/2 is an if variation that only works when it's negative
+
+   @code elixir
+   unless is_integer("hello") do
+     "Not an int"
+   end # "Not an Int"
+   @end
+** (case)
+   when u need to match against multiple patterns, u can use case/2
+   @code elixir
+   case {:ok , "Hello World"} do 
+     {:ok, result} -> result
+     {:error} -> "Uh oh!"
+     _ -> "Catch all"
+   end
+   @end
+
+   the _ variable is the "default" value for pattern matching things, 
+   it's important on the case, because it needs
+   a fallback when the pattern don't matches in any case
+
+   case/2 follows all rules and restrictions of pattern matching
+   if u want to use the value of a variable, u will need the ^/1 operator
+
+   @code elixir
+    pie = 3.14
+    case "cherry pie" do 
+      ^pie -> "Not so tasty" # here, ^pie has the value of 3.14, then, don't match with "cherry pie"
+      pie -> "I bet #{pie} is tasty" # here, pie has "cherry pie" as it's values, then, it matches
+    end # "I bet #{pie} is tasty" 
+   @end
+
+   case/2 also has support to guard clauses, but i won't explain this here
+** cond
+   cond is used when we wanna match conditions, and not values
+
+   @code elixir
+   cond do
+     2 + 2 == 5 -> "This will not be true"
+     2 * 2 == 3 -> "Nor this"
+     1 + 1 == 2 -> "But this will"
+   end # "But this will"
+   @end
+
+   like case/2, cond/1 will raise an error if there is no match
+   to prevent, we could define a conditions that is true by default
+
+   @code elixir
+     cond do 
+       7 + 1 == 0 -> "Incorrect"
+       true -> "Catch all" # it's like the _ on other pattern matches
+     end #  "Catch all"
+   @end
+
+** with
+   with/1 is useful when u might need a nested case/2
+   the with/1 expression is composed of the keyword
+   generators, and finally an expression
+
+   @code elixir
+   user = ${first: "Sean", last: "Callan"}
+
+   with {:ok, first} <- Map.fetch(user, :first),
+     {:ok, last} <- Map.fetch(user, :last),
+     do: last <> ", " <> first
+
+   # "Callan, Sean"
+   @end
+   if it fails to match, the non-matching value will be returned
+   @code elixir
+   user = %{first: "doomspork"}
+   with {:ok, first} <- Map.fetch(user, :first),
+     {:ok, last} <- Map.fetch(user, :last),
+     do: last <> ", " <> first #:error
+   @end
+
+   an example of nested case, that could be substituted by a with clause
+   @code elixir
+   case Repo.insert(changeset) do
+     {:ok, user} ->
+       case Guardian.enconde_and_sign(user, :token, claims) do
+         {:ok, token, full_claims} ->
+           important_stuff(token, full_claims)
+
+         error -> 
+           error
+       end
+     error ->
+       error
+   end
+   @end
+
+   with with/1: 
+   @code elixir
+   with {:ok, user} <- Repo.insert(changeset),
+       {:ok, token, full_claims} <- Guardian.enconde_and_sign(user, :token, claims) do 
+     important_stuff(token, full_claims)
+   end
+   @end
+
+

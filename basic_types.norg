@@ -1,0 +1,50 @@
+* Elixir basic types
+** These are some basic elixir types
+*** integer
+     - basically a number without floating point
+     @code elixir
+       integer = 6 # 6
+     @end
+
+     - elixir integer has support for binary, octal and hexadecimal
+     @code elixir
+        integer = 0b0110 # 6
+     @end
+*** float
+
+     - a number with floating point
+     @code elixir
+      float = 3.14
+      float = 1.0e-10
+     @end
+
+*** booleans
+     - true or false
+     @code elixir
+        boolean = true
+        boolean = false
+     @end
+*** atoms
+     - a constant that his name is his value
+     @code elixir
+      :foo # :foo
+      :bar # :bar
+     @end 
+*** String
+     - they are utf-8 encoded
+     - and support escape sequences and multiline
+     @code elixir
+      "Hello"
+      "foo\nbar" === "foo
+                      bar"
+     @end
+     - U can concatenate strings with the <> operator
+     @code elixir 
+     name = "Sean"
+     "Hello" <> name # "Hello Sean"
+     @end
+     - Can also interploate strings
+     @code elixir
+       name = "Sean" 
+       "Hello #{name}"
+     @end

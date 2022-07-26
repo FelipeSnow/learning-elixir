@@ -1,0 +1,55 @@
+* Basic Operations in elixir
+** Arithmetic 
+   - Elixir supports the basic operators +, -, * and / (/ always returns a float)
+   @code elixir
+     2 + 2 # 4
+     2 - 1 # 1
+     2 * 5 # 10
+     10 / 5 # 2.0
+   @end
+    
+   - To get the result of a integer division or it's remainder u need to use two functions,
+     div and rem(ainder)
+     @code elixir
+       div(10, 3) ## 3
+       rem(10, 3) ## 1
+     @end 
+** Boolean
+   - Elixir has the ||, && and ! boolean operators that's supports any type.
+     @code elixir
+      -20 || true ## -20
+      false || 42 ## 42
+
+      42 && true ## true
+      42 && nil # nil
+      !42 # false
+      !false # true
+     @end
+   - There are too three other operators, when using these, the first argument *MUST* be a boolean
+     *and*, *or* and *not*
+     @code elixir
+     true and 42 ## 42
+     false or true ## true
+     not false ## true
+     42 and true ## argument error
+     not 42 ## argument error
+     @end
+** Comparision
+   - For comparision, elixir has the ==, != , ===, !==, <= , >=, < and >
+   @code elixir
+     1 > 2 # false
+     1 != 2 # true
+     2 == 2 # true
+     2 <= 3 # true
+   @end
+   - For strict comparision of integers and floats, use ===
+     @code elixir
+      2 == 2.0 # true
+      2 === 2.0 # false
+     @end
+     it occurs because === compares type and value
+
+   - Because every type can be compared, u have a sort order
+   @code elixir
+     number < atom < reference < function < port < pid < tuple < map < list < bitstring
+   @end

@@ -1,0 +1,122 @@
+* Elixir collections
+** Lists
+   - Lists are simple collections of values of multiple types
+   @code elixir
+     [3,14, :pie, "Apple"]
+   @end
+   - List collections on elixir are implementeds as linked lists
+     thinking on that, prepending is faster than appending on a list
+   @code elixir
+     list = [3.14, :pie, "Apple"]
+     ## this is faster
+     ["pi" | list] ## ["pi", 3.14, :pie, "Apple"]
+     ## than this
+     list ++ ["Cherry"] # [3.14, :pie, "Apple", "Cherry"]
+   @end
+*** Concatenation
+    - List concatenation uses the ++/2 operator
+      (++/2 means that the function ++ needs two arguments)
+    @code elixir
+    [1, 2] ++ [3, 4, 1] ## [1, 2, 3, 4, 1]
+    @end
+*** Subtraction
+    - Subtraction uses the --/2 operator
+    @code elixir
+      [1, 2] -- [1] ## [2]
+    @end
+
+    @code elixir
+      [1, 1, 1, 2, 3] -- [1, 3] ## [1, 1, 2]
+    @end
+
+    @code elixir 
+      [2] -- [2.0] ## [2] (-- uses strict comparision (===)) 
+      [2.0] -- [2.0] ## []
+    @end
+*** Head/Tail
+    - a list's head is it's first element
+    @code elixir
+      # U can acess the head with hd/1
+      hd [3.14, :pie, "Apple"] # 3.14
+    @end
+
+    - the tail is the remaining elements of the list
+    @code elixir
+      # U can acess the head with tl/1
+      tl [3.14, :pie, "Apple"] # [:pie, "Apple"]
+    @end
+
+    - u can use pattern matching and the | operator
+      to split a list into head and tail
+    @code elixir
+      [head | tail] = [3.14, :pie, "Apple"]
+
+      head # 3.14
+      tail # [:pie, "Apple"]
+    @end
+
+** Tuples
+   - Tuples are 'constant'
+     acessing tuples is faster than List collections
+     to mod a tuple u need to copy the entire tuple again
+
+   @code elixir
+     {3.14, :pie, "Apple"}
+   @end
+
+   - Tuples can be used to return multiple things from a function
+     u can use pattern match with this
+   @code elixir
+     File.read("path/to/existing/file") #{:ok, "...content"}
+     File.read("path/to/non/existing/file") #{:ok, :enoent} ##:enoent is a atom that means that the function didn't find any content
+   @end
+** Keyword Lists
+   - A keyword list is a special list of two-element tuples whose
+     the first element is always an atom, it's the key
+     they have the same perfomance as lists
+   - they are commonly used to pass options to functions 
+
+   @code elixir
+     [foo: "bar", hello: "world"] === [{:foo, "bar"}, {:hello, "world"}]
+   @end
+** Maps
+   - Maps, unlike keyword lists allows keys of any type
+     you can define one with %{}
+   @code elixir
+   map = %{:foo => "bar", "hello" => :world}
+   map[:foo] # "bar"
+   map["hello"] # :world
+   @end
+   - U can also use variables as map keys
+   @code elixir
+     key = "hello"
+     %{key => "world"}
+   @end
+   - keys are unique, if you add a duplicate key to a map, 
+     it value's will replace the former.
+  @code elixir
+  %{:foo => "bar", :foo => "hello world"} # {foo: "hello world"}
+  @end
+
+   - for atom only keys u can use the following syntax:
+   @code elixir
+   map = %{foo: bar, hello: "world"}
+   ## u can also acess they with the period
+   map.hello # "world"
+   @end
+  *** Updating values
+      - to update values u can use the following syntax, similar with lists
+      @code elixir
+      map = %{foo: "bar", hello: "world"}
+      map = %{map | foo: "baz"} # %{foo: "baz", hello: "world"} 
+      @end
+        this only works with keys that already exists on the map 
+        otherwise it will raise an error
+
+      - To add new keys u can use the Map.put/3 function
+
+      @code elixir
+      map = %{hello: "world"}
+      Map.put(map, ":foo", "baz") # %{foo: "baz", hello: "world"}
+      @end
+

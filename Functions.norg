@@ -1,0 +1,220 @@
+* Elixir functions
+  In elixir and many functional languages, 
+  functions are first class citizens.
+  Here u will learn the types of functions in elixir
+  the difference of each one, and how to use them
+** Anonymous functions
+   as the name implies, an anonymous function don't has a name
+   to define an anonymous function in elixir we need the fn and end keyword
+   @code elixir
+   sum = fn (a, b) -> a + b end
+   sum.(2, 3) # 5
+   @end
+   u can also use the & shortand to declare functions
+   @code elixir
+   sum = &(&1 + &2) # is equivalent to fn (a, b) -> a + b end
+    sum.(2, 3) # 5
+   @end
+  
+   &1 and &2 are the parameters
+** Pattern Matching
+   Pattern matching can be applied to function signatures
+   Elixir uses pattern matching to check through all possible match options
+   and select the first matchin option to run
+   @code elixir
+   handle_result = fn
+     {:ok, result} -> IO.puts "Handling result..."
+     {:ok, _} -> IO.puts "This would be never run as previous will be matched beforehand"
+     {:error} -> IO.puts "An error has ocurred"
+   end
+   some_result = 1
+   handle_result.({:ok, some_result}) # prints Handling result... and returns :ok
+   handle_result.({:error}) # prints An error has ocurred! and returns :ok
+
+   @end
+** Named functions
+   u can define functions with names to easily refer to them later
+   Named functions are defined within a moudule using the def keyword
+   Functions defined within a module are 
+   available to other modules for use
+
+   @code elixir
+    defmodule Greeter do 
+      def hello(name) do
+        "Hello, " <> name
+      end
+    end
+
+    Greeter.hello("Sean") # "Hello, Sean"
+   @end
+
+   if your function body is only one line, you can omit the end keyword with do:
+
+   @code elixir
+    defmodule Greeter do 
+      def hello(name) do: "Hello, " <> name
+    end
+
+    Greeter.hello("Sean") # "Hello, Sean"
+   @end
+
+   pattern matching can also be used in named functions
+   @code elixir
+   defmodule Length do 
+     def of([]), do: 0
+     def of([_ | tail]), do: 1 + of(tail)
+   end
+   Length.of [] # 0
+   Length.of [1, 2, 3] # 3
+   @end
+
+** Function Naming and Arity
+   as mentioned before, functions are named by 
+   he combination of given name and arity(number of arguments)
+   This means you can do things like: 
+   @code elixir
+    defmodule Greeter2 do 
+      def hello(), do: "Hello, anonymous person!" #hello/0
+      def hello(name), do: "Hello, " <> name #hello/1
+      def hello(name1, name2), do: "Hello, #{name1} and #{name2}" #hello/2
+    end
+
+    Greeter2.hello() # Hello, anonymous person!
+    Greeter2.hello("Fred") # Hello, Fred
+    Greeter2.hello("Fred", "Jane")# Hello, Fred and Jane 
+   @end
+
+   unlike function overloading, functions with 
+   different aritys are considered other functions
+   totally independents
+** Functions and pattern matching
+   functions are always pattern-matching the arguments that they are calling
+
+   example: 
+   if you want only an specific key of an map
+   u can pattern match the argument of the function
+  @code elixir
+    defmodule Greeter1 do
+      def hello(%{name: person_name}) do
+          IO.puts "Hello, "<> person_name
+      end
+    end
+  @end
+
+   if we have an map describing a person named Fred
+   @code elixir
+    fred = %{
+      name: "Fred"
+      age: "95"
+      favorite_color: "Taupe"
+    }
+   @end
+   and use the entire map as an argument on our hello function: 
+   @code elixir
+   Greeter1.hello(fred) # prints "Hello, fred", using only the value of the :name key
+   @end
+
+   if we call this function with a map that doesn't contain a :name key we get an error
+   because elixir assumes that u will call an function following the pattern matching of it's arguments
+
+   this is the flow: 
+   
+   Greeter1.hello/1 expects a map with :name key
+   when we call Greeter1.hello/1 with fred as an argument
+   elixir pattern matches in this form
+   @code elixir
+     %{name: person_name} = %{name: "Fred", age: "95", favorite_color: "Taupe"}
+   @end
+
+   this matches, because it finds the key that corresponds with :name
+   as result of the match, we pick the value of the :name key
+   and binds it to the variable of the left side person_name
+
+   continuing with this, if we wanted to inspect the object that person_name comes from
+   we would do this
+    @code elixir
+     defmodule Greeter2 do
+       def hello(%{name: person_name = person}) do  
+         #if the match is sucesseful,
+         #we bind the value of the :name key on person_name 
+         #and the entire object on person
+         IO.puts "Hello, "<> person_name
+         IO.inspect person
+       end
+     end
+    @end
+
+   so, calling Greeter2.hello(fred) will print
+   "Hello, Fred" and an description of the object
+   @code elixir
+    Greeter2.hello(fred)
+    # Hello, Fred
+    # %{
+    # name: "Fred"
+    # age: "95"
+    # favorite_color: "Taupe"
+    #}
+   @end
+
+** Private Functions 
+   when u don't want to other modules use a specific function
+   u can make it private
+   those can be defined with defp, and 
+   can be called only on the defined module
+
+   @code elixir
+    defmodule Greeter do 
+      def hello(name), do: phrase() <> name
+      defp phrase, do: "Hello, "
+    end
+
+    Greeter.hello("Sean") # "Hello, Sean"
+    Greeter.phrase() # Error, Undefined or private function
+   @end
+** Guards
+   Guards are checks to complement the pattern matching
+   @code elixir
+     def empty_map?(map) when map_size(map) == 0, do: true
+     def empty_map?(map) when is_map(map), do: false
+   @end
+
+   guards can be used as function clauses, like the example above
+
+   can also be used on case expressions:
+   @code elixir
+    case x do
+      1 -> :one
+      2 -> :two
+      n when is_integer(n) and n > 2 -> :larger_than_two
+    end
+   @end 
+
+   in anonymous functions: 
+   @code elixir
+   larger_than_two? = fn
+     n when is_integer(n) and n > 2 -> true
+     n when is_integer(n) -> false
+   end
+   @end
+
+   u can also define custom guards with defguard/1 and defguardp/1 (privates)
+   those always are defined based on other existing guards
+
+*** Falling guards
+    in guards, when functions would raise exceptions, the guard fails instead:
+
+    @code elixir
+    length("hello") # raises an ArgumentError
+    case "hello" do
+      something when length(something) > 0 -> 
+        :length_worked # this will fail the guard, so, 
+                      #it will go to the next guard, without raising an error
+      _ -> 
+        :length_failed
+    end # :length_failed
+    @end
+    the use of length on the guard above, check if the argument is an list
+    and checks the length of it too
+    discarding the use of is_list
+*** Defining custom guard expressions
+
