@@ -171,6 +171,21 @@
     Greeter.hello("Sean") # "Hello, Sean"
     Greeter.phrase() # Error, Undefined or private function
    @end
+** Default Arguments
+  if u want a default value for an argument, u use the following syntax
+   @code elixir
+   defmodule Greeter do 
+     def hello(name, language_code \\ "en") do # \\ defines the default value of language_code to "en"
+       phrase(language_code) <> name
+     end
+
+     defp phrase("en") do: "Hello, "
+     defp phrase("es") do: "Hola, "
+   end
+
+   Gretter.hello("Sean") # Hello, Sean
+   @end
+
 ** Guards
    Guards are checks to complement the pattern matching
    @code elixir
@@ -217,4 +232,54 @@
     and checks the length of it too
     discarding the use of is_list
 *** Defining custom guard expressions
+    example: 
+    u want to check if a function argument is an even or odd integer
+    u could check like this
+
+    @code elixir
+    def my_function(number) when is_integer(number) and rem(number, 2) == 0 do: 
+      # function stuff
+    end
+    @end
+
+    but, repeating the guard many times would be painful
+    thinking on it, we can define custom guards
+
+    @code elixir
+    defmodule MyInteger do 
+      defguard is_even(value) when is_integer(value) and rem(value, 2) == 0 
+    end
+    @end
+
+    and then using it outside of the module: 
+    @code elixir
+      import MyInteger, only: [is_even: 1]
+
+      def my_function(number) when is_even(number) do
+        #my_function stuff
+      end
+    @end
+
+    u can use defguard and defguardp(for private ones) to define custom guards
+*** Multiple guards in the same clause
+      u can simply use multiple guards to the same clause instead of using or to separating them:
+    @code elixir
+    # this
+    def foo(term) do when is_integer(term) or is_float(term) or is_nil(term),
+      do: :maybe_number
+    def foo (_),
+      do: :something_else
+
+    # could be written like this: 
+      def foo(term)
+        when is_integer(term)
+        when is_float(term)
+        when is_nil(term) do
+      :maybe_number
+      end
+
+      def foo (_) do: :something_else
+    @end
+
+    remember that if a function raises an error in a guard, all the guard fails
 
